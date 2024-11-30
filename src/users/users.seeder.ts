@@ -11,7 +11,7 @@ export class UsersSeeder implements Seeder {
     ) { }
 
     async seed(): Promise<any> {
-        const users = DataFactory.createForClass(User).generate(10); // Génère 10 utilisateurs fictifs
+        const users = [{pseudo : 'A', password : 'admin'}, {pseudo : 'B', password : 'password'}, {pseudo : 'C', password : 'root'}]; // Génère 10 utilisateurs fictifs
         return this.userRepository.save(users); // Sauvegarde les utilisateurs dans la base de données
     }
 

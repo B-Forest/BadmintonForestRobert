@@ -8,6 +8,6 @@ export class User{
   @Column({ type: 'varchar', length: 30, nullable: false, default: 'adrien' })
   pseudo: string;
 
-  @Column({ type: 'varchar', length: 43, nullable: false, default: 'password' })
+  @Column({ type: 'varchar', length: 60, nullable: false, default: 'password' })
   password: string;
 }

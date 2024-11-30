@@ -13,9 +13,27 @@ paths:
   /login:
     post: 
       summary : Connexion à un compte utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pseudo
+                - password
+              properties:
+                pseudo:
+                  type: string
+                  description: Le pseudo de l'utilisateur
+                password:
+                  type: string
+                  description: Le mot de passe de l'utilisateur
       responses:
         "200":
           description: L'utilisateur.ice est connecté.e
+        "400":
+          description: Paramètres incorrects ou manquants
   /reservations:
     post:
       summary : Reservation d'un créneau de 45 minutes d'une salle
