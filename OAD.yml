@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: Outil de réservation de terrain de Badminton
+  description: Une API permettant à des utilisateurs de réserver des créneaux pour des terrains de Badminton
+  version: 0.0.1
+paths: 
+  /register:
+    post: 
+      responses:
+        "201":
+          description: L'utilisateur.ice a été créé.e
+  /login:
+    post: 
+      responses:
+        "200":
+          description: L'utilisateur.ice est connecté.e
+  /reservations:
+    post: 
+      responses:
+        "201":
+          description: La réservation a été créée
+  /reservations/:id:
+    delete: 
+      responses:
+        "200":
+          description: La réservation a été annulée
+        "204":
+          description: La réservation a été annulée
+        "404":
+          description: La réservation n'existe pas
+  /fields/:id:
+    put: 
+      responses:
+        "200":
+          description: La disponibilité du terrain a été modifiée
+        "204":
+          description: La disponibilité du terrain a été modifiée
+    get: 
+      responses:
+        "200":
+          description: La disponibilité du terrain
+        "404":
+          descrpition: Le terrain n'exsite pas
+  /users/:id/reservation:
+    get: 
+      responses:
+        "200":
+          description: La liste des réservation d'un utilisateur
+        "404":
+          description: L'utilisateur n'existe pas
+  /fields:
+    get: 
+      responses:
+        "200":
+          description: La liste des créneaux de tous les terrains
