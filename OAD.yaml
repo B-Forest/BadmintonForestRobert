@@ -3,13 +3,39 @@ info:
   title: Outil de réservation de terrain de Badminton
   description: Une API permettant à des utilisateurs de réserver des créneaux pour des terrains de Badminton
   version: 0.0.1
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: >-
+        Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
 paths: 
   /register:
     post: 
       summary : Création d'un compte utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pseudo
+                - password
+              properties:
+                pseudo:
+                  type: string
+                  description: Le pseudo de l'utilisateur
+                password:
+                  type: string
+                  description: Le mot de passe de l'utilisateur
       responses:
         "201":
           description: L'utilisateur.ice a été créé.e
+        "400":
+          description: Paramètres incorrects ou manquants
   /login:
     post: 
       summary : Connexion à un compte utilisateur
@@ -61,6 +87,8 @@ paths:
           description: L'ID fourni est invalide
   /fields/{id}:
     put:
+      security:
+        - Bearer: []
       summary : Rendre un terrain en disponible/disponible
       parameters:
         - name: id

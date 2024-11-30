@@ -15,8 +15,8 @@ export class UsersService {
     private readonly jwtService: JwtService,
 ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async userRegister(data: any) {
+    return await this.createUser(data);
   }
 
   async login(data: CreateUserDto) {
@@ -39,6 +39,21 @@ export class UsersService {
 
   getUserByPseudo(pseudo: string) {
     return this.userRepository.findOneBy({ pseudo });
+  }
+
+  getUserById(id: number){
+    return this.userRepository.findOneBy({ id: id });
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    if (!createUserDto.password || !createUserDto.pseudo) {
+      throw new UnauthorizedException({
+        message: 'Pseudo and password are required',
+      });
+    }
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
   }
 
 }
