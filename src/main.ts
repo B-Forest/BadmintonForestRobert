@@ -1,17 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as fs from 'fs';
+import * as YAML from 'yaml';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const config = new DocumentBuilder()
-    .setTitle('Badminton API')
-    .setDescription('The Badminton API description')
-    .setVersion('1.0')
-    .addTag('Badminton')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  // Charger le fichier YAML
+  const openAPIDocument = YAML.parse(fs.readFileSync('./OAD.yaml', 'utf8'));
+  
+  SwaggerModule.setup('api', app, openAPIDocument);
 
   await app.listen(3000);
 }

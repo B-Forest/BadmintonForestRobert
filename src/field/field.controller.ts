@@ -3,7 +3,7 @@ import { FieldService } from './field.service';
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
 
-@Controller('field')
+@Controller('fields')
 export class FieldController {
   constructor(private readonly fieldService: FieldService) {}
 

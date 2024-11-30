@@ -6,6 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Field } from './field/entities/field.entity';
 import { Slot } from './slot/entities/slot.entity';
 import { User } from './users/entities/user.entity';
+import { UsersController } from './users/users.controller';
+import { SlotController } from './slot/slot.controller';
+import { UsersModule } from './users/users.module';
+import { FieldModule } from './field/field.module';
+import { SlotModule } from './slot/slot.module';
 
 ConfigModule.forRoot();
 
@@ -23,9 +28,11 @@ ConfigModule.forRoot();
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      entities: [User, Field, Slot]
+      entities: [User, Field, Slot],
     }),
-
+    UsersModule,
+    FieldModule,
+    SlotModule,
   ],
   controllers: [AppController],
   providers: [AppService],
