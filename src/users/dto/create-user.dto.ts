@@ -7,5 +7,5 @@ export class CreateUserDto {
   pseudo: string;
 
   @IsOptional()
-  role: Role;
+  role?: Role;
 }

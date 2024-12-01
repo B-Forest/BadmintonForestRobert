@@ -33,7 +33,6 @@ export class FieldService {
   }
 
   async updateField(id: number, updateFieldDto: UpdateFieldDto, req : CustomRequest){
-
     const user = await this.userService.getUserById(req.user.id);
     if(user.role == Role.Admin){
 
