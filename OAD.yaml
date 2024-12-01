@@ -74,7 +74,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
             minimum: 0
       responses:
         "200":
@@ -85,17 +85,17 @@ paths:
           description: La réservation n'existe pas
         "400":
           description: L'ID fourni est invalide
-  /fields/{id}/disable:
+  /fields/{name}/disable:
     put:
       security:
         - Bearer: []
       summary : Rendre un terrain en indisponible pendant 2 jours
       parameters:
-        - name: id
+        - name: name
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             minimum: 0
       responses:
         "200":
@@ -104,17 +104,17 @@ paths:
           description: La disponibilité du terrain a été modifiée
         "400":
           description: L'ID fourni est invalide
-  /fields/{id}/avaible:
+  /fields/{name}/avaible:
     put:
       security:
         - Bearer: []
       summary : Mettre un terrain indisponible à disponible
       parameters:
-        - name: id
+        - name: name
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             minimum: 0
       responses:
         "200":

@@ -34,10 +34,16 @@ export class FieldController {
     return this.fieldService.remove(+id);
   }
 
-  @Put(':id')
+  @Put(':name/disable')
   @UseGuards(AuthGuard)
-  updateField(@Param('id') id: string, @Body() updateFieldDto: UpdateFieldDto, @Request() req : CustomRequest) {
-    return this.fieldService.updateField(+id, updateFieldDto, req);
+  disableField(@Param('name') name: string, @Request() req : CustomRequest) {
+    return this.fieldService.updateField(name, req);
+  }
+
+  @Put(':name/avaible')
+  @UseGuards(AuthGuard)
+  avaibleField(@Param('name') name: string, @Request() req : CustomRequest) {
+    return this.fieldService.updateField(name, req);
   }
  
 }
