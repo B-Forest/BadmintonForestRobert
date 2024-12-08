@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Slot } from "src/slot/entities/slot.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('field')
 export class Field {
@@ -10,4 +11,7 @@ export class Field {
 
   @Column({ type: 'date', nullable: false })
   next_avaible_day: Date;
+
+  @OneToMany(() => Slot, (slot) => slot.field)
+  slots: Slot[];
 }
