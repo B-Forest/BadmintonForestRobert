@@ -11,6 +11,9 @@ import { SlotController } from './slot/slot.controller';
 import { UsersModule } from './users/users.module';
 import { FieldModule } from './field/field.module';
 import { SlotModule } from './slot/slot.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 ConfigModule.forRoot();
 

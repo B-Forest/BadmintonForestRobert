@@ -17,6 +17,10 @@ import { jwtConstants } from 'src/auth/auth.const';
   ],
   controllers: [UsersController],
   providers: [UsersService],
+<<<<<<< HEAD
   exports:[UsersService],
+=======
+  exports: [UsersService],
+>>>>>>> f3055d4 (creation of slots)
 })
-export class UsersModule {}
+export class UsersModule { }

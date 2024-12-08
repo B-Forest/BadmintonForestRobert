@@ -5,7 +5,7 @@ import { UpdateSlotDto } from './dto/update-slot.dto';
 
 @Controller('slot')
 export class SlotController {
-  constructor(private readonly slotService: SlotService) {}
+  constructor(private readonly slotService: SlotService) { }
 
   @Post()
   create(@Body() createSlotDto: CreateSlotDto) {
@@ -15,6 +15,14 @@ export class SlotController {
   @Get()
   findAll() {
     return this.slotService.findAll();
+  }
+
+  @Get('field/:fieldId/date/:date')
+  async getOrGenerateSlots(
+    @Param('fieldId') fieldId: string,
+    @Param('date') date: string,
+  ) {
+    return this.slotService.getOrGenerateSlots(+fieldId, new Date(date));
   }
 
   @Get(':id')
