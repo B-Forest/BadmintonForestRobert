@@ -11,10 +11,10 @@ components:
       in: header
       description: >-
         Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
-paths: 
+paths:
   /register:
-    post: 
-      summary : Création d'un compte utilisateur
+    post:
+      summary: Création d'un compte utilisateur
       requestBody:
         required: true
         content:
@@ -32,13 +32,13 @@ paths:
                   type: string
                   description: Le mot de passe de l'utilisateur
       responses:
-        "201":
+        '201':
           description: L'utilisateur.ice a été créé.e
-        "400":
+        '400':
           description: Paramètres incorrects ou manquants
   /login:
-    post: 
-      summary : Connexion à un compte utilisateur
+    post:
+      summary: Connexion à un compte utilisateur
       requestBody:
         required: true
         content:
@@ -56,19 +56,15 @@ paths:
                   type: string
                   description: Le mot de passe de l'utilisateur
       responses:
-        "200":
+        '200':
           description: L'utilisateur.ice est connecté.e
-        "400":
+        '400':
           description: Paramètres incorrects ou manquants
-  /reservations:
+  /slots/reservations/{id}:
     post:
-      summary : Reservation d'un créneau de 45 minutes d'une salle
-      responses:
-        "201":
-          description: La réservation a été créée
-  /reservations/{id}:
-    delete: 
-      summary : Annulation d'un créneau de 45 minutes d'une salle
+      security:
+        - Bearer: []
+      summary: Reservation d'un créneau de 45 minutes d'une salle
       parameters:
         - name: id
           in: path
@@ -77,19 +73,33 @@ paths:
             type: number
             minimum: 0
       responses:
-        "200":
+        '201':
+          description: La réservation a été créée
+    delete:
+      security:
+        - Bearer: []
+      summary: Annulation d'un créneau de 45 minutes d'une salle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+            minimum: 0
+      responses:
+        '200':
           description: La réservation a été annulée
-        "204":
+        '204':
           description: La réservation a été annulée
-        "404":
+        '404':
           description: La réservation n'existe pas
-        "400":
+        '400':
           description: L'ID fourni est invalide
   /fields/{name}/disable:
     put:
       security:
         - Bearer: []
-      summary : Rendre un terrain en indisponible pendant 2 jours
+      summary: Rendre un terrain en indisponible pendant 2 jours
       parameters:
         - name: name
           in: path
@@ -98,17 +108,17 @@ paths:
             type: string
             minimum: 0
       responses:
-        "200":
+        '200':
           description: La disponibilité du terrain a été modifiée
-        "204":
+        '204':
           description: La disponibilité du terrain a été modifiée
-        "400":
+        '400':
           description: L'ID fourni est invalide
   /fields/{name}/avaible:
     put:
       security:
         - Bearer: []
-      summary : Mettre un terrain indisponible à disponible
+      summary: Mettre un terrain indisponible à disponible
       parameters:
         - name: name
           in: path
@@ -117,49 +127,62 @@ paths:
             type: string
             minimum: 0
       responses:
-        "200":
+        '200':
           description: La disponibilité du terrain a été modifiée
-        "204":
+        '204':
           description: La disponibilité du terrain a été modifiée
-        "400":
+        '400':
           description: L'ID fourni est invalide
-  /fields/{id}:
-    get: 
-      summary : Voir la liste des créneaux du terrain
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            minimum: 0
-      responses:
-        "200":
-          description: La disponibilité du terrain
-        "400":
-          description: L'ID fourni est invalide
-        "404":
-          description: Le terrain n'exsite pas
-  /users/{id}/reservation:
+  /slots/fields/{id}/date/{date}:
     get:
-      summary : Voir la liste des créneaux réservé d'un utilisateur
+      summary: Voir la liste des créneaux du terrain pour une date donnée
       parameters:
         - name: id
           in: path
           required: true
+          description: L'identifiant du terrain
           schema:
             type: integer
             minimum: 0
+        - name: date
+          in: path
+          required: true
+          description: La date pour laquelle voir les créneaux (au format DD-MM-YYYY)
+          schema:
+            type: string
+            format: date
       responses:
-        "200":
-          description: La liste des réservation d'un utilisateur
-        "400":
+        '200':
+          description: La liste des créneaux disponibles pour le terrain à cette date
+        '400':
+          description: Les paramètres fournis sont invalides (ID ou date)
+        '404':
+          description: Le terrain ou les créneaux n'existent pas
+  /slots/users/reservations:
+    get:
+      summary: Voir la liste des créneaux réservé de l'utilisateur connecté
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: La liste des réservation de l'utilisateur connecté
+        '400':
           description: L'ID fourni est invalide
-        "404":
+        '404':
           description: L'utilisateur n'existe pas
-  /fields:
+  /slots/fields/{date}:
     get:
-      summary : Voir la liste des terrains avec leur créneaux disponible
+      summary: Voir la liste des terrains avec leur créneaux disponible pour une date donnée
+      parameters:
+        - name: date
+          in: path
+          required: true
+          description: La date pour laquelle voir les créneaux (au format YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
       responses:
-        "200":
-          description: La liste des créneaux de tous les terrains
+        '200':
+          description: La liste des créneaux de tous les terrains à cette date
+        '404':
+          description: L'utilisateur n'existe pas

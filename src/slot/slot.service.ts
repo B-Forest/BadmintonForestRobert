@@ -4,9 +4,11 @@ import { UpdateSlotDto } from './dto/update-slot.dto';
 import { Slot } from './entities/slot.entity';
 import { Field } from 'src/field/entities/field.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { FieldService } from 'src/field/field.service';
 import { UsersService } from 'src/users/users.service';
+import { CustomRequest } from 'src/request/custom-request';
+import e from 'express';
 
 @Injectable()
 export class SlotService {
@@ -32,7 +34,6 @@ export class SlotService {
   }
 
   async getOrGenerateSlots(fieldId: number, date: Date): Promise<Slot[]> {
-    // Normaliser la date pour ne travailler que sur la journée
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -99,7 +100,7 @@ export class SlotService {
     return `This action returns all slot`;
   }
 
-  async addUserToSlot(slotId: number, userId: number) {
+  async addUserToSlot(slotId: number, req: CustomRequest) {
     const slot = await this.repository.findOne({
       where: { id: slotId },
     });
@@ -107,7 +108,72 @@ export class SlotService {
       throw new Error(`Slot with ID ${slotId} not found`);
     }
 
-    const user = await this.userService.findOne(userId);
+    if (slot.user) {
+      throw new Error(`Slot with ID ${slotId} is already booked`);
+    }
+
+    try {
+      const user = await this.usersService.getUserById(req.user.id);
+      slot.user = user;
+      return await this.repository.save(slot);
+    } catch (e) {
+      throw new Error(`User with ID ${req.user.id} not found`);
+    }
+  }
+
+  async deleteUserToSlot(slotId: number, req: CustomRequest) {
+    const slot = await this.repository.findOne({
+      where: { id: slotId },
+      relations: ['user'],
+    });
+    if (!slot) {
+      throw new Error(`Slot with ID ${slotId} not found`);
+    }
+
+    if (!slot.user) {
+      throw new Error(`Slot with ID ${slotId} is not booked`);
+    }
+
+    const user = await this.usersService.getUserById(req.user.id);
+
+    if (slot.user.id !== user.id) {
+      throw new Error(`User with ID ${req.user.id} is not the owner of slot with ID ${slotId}`);
+    }
+
+    slot.user = null;
+    return await this.repository.save(slot);
+  }
+
+  async findAllByUser(req: CustomRequest) {
+
+    try {
+      const user = await this.usersService.getUserById(req.user.id);
+      const slots = this.repository.find({
+        where: { user: user },
+        relations: ['field'],
+      });
+
+      if (slots) {
+        return slots;
+      } else {
+        throw new Error(`No slots found for user with ID ${req.user.id}`);
+      }
+    } catch (e) {
+      throw new Error(`User with ID ${req.user.id} not found`);
+    }
+  }
+
+  async getSlotsByDate(date: Date) {
+    const fields = await this.fieldService.findAll();
+
+    const slots = [];
+
+    for (const field of fields) {
+      const fieldSlots = await this.getOrGenerateSlots(field.id, date);
+      slots.push(fieldSlots);
+    }
+
+    return slots;
   }
 
   findOne(id: number) {

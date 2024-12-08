@@ -3,10 +3,12 @@ import { FieldService } from './field.service';
 import { FieldController } from './field.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Field } from './entities/field.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Field]), // Enregistrer l'entité Field comme dépôt
+    TypeOrmModule.forFeature([Field]),
+    UsersModule
   ],
   controllers: [FieldController],
   providers: [FieldService],

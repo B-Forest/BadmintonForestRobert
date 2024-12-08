@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards, Request } from '@nestjs/common';
 import { SlotService } from './slot.service';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { UpdateSlotDto } from './dto/update-slot.dto';
+import { AuthGuard } from 'src/auth/auth.guards';
+import { CustomRequest } from 'src/request/custom-request';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-@Controller('slot')
+@Controller('slots')
 export class SlotController {
   constructor(private readonly slotService: SlotService) { }
 
@@ -17,7 +20,7 @@ export class SlotController {
     return this.slotService.findAll();
   }
 
-  @Get('field/:fieldId/date/:date')
+  @Get('fields/:fieldId/date/:date')
   async getOrGenerateSlots(
     @Param('fieldId') fieldId: string,
     @Param('date') date: string,
@@ -25,18 +28,31 @@ export class SlotController {
     return this.slotService.getOrGenerateSlots(+fieldId, new Date(date));
   }
 
+  @Post('reservations/:id')
+  @UseGuards(AuthGuard)
+  addUserToSlot(@Param('id') id: number, @Request() req: CustomRequest) {
+    return this.slotService.addUserToSlot(+id, req);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.slotService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSlotDto: UpdateSlotDto) {
-    return this.slotService.update(+id, updateSlotDto);
+  @Delete('reservations/:id')
+  @UseGuards(AuthGuard)
+  remove(@Param('id') id: string, @Request() req: CustomRequest) {
+    return this.slotService.deleteUserToSlot(+id, req);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.slotService.remove(+id);
+  @Get('users/reservations')
+  @UseGuards(AuthGuard)
+  async getUserSlots(@Param('id') id: string, @Request() req: CustomRequest) {
+    return this.slotService.findAllByUser(req);
+  }
+
+  @Get('fields/:date')
+  async getSlotsByDate(@Param('date') date: string) {
+    return this.slotService.getSlotsByDate(new Date(date));
   }
 }
