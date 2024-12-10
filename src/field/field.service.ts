@@ -43,19 +43,13 @@ export class FieldService {
       let field = await this.getFieldByName(field_name);
       let date = new Date(field.next_avaible_day);
       let today = new Date(Date.now());
-      //today.setHours(0, 0, 0, 0);
-      console.log(date);
-      console.log(today);
       if(date >= today){
-        console.log("yo");
         date = new Date(today);
       }else{
         date = new Date(today);
         date.setDate(date.getDate() + 2); 
       }
-      console.log(date);
       field.next_avaible_day = date;
-      console.log(field);
       return this.fieldRepository.save(field);
     }else{
       throw new UnauthorizedException({
