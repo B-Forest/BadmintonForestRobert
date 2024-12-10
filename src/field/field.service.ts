@@ -14,19 +14,21 @@ export class FieldService {
   constructor(
     @InjectRepository(Field)
     protected readonly fieldRepository: Repository<Field>,
-    private readonly userService : UsersService,
-  ) {}
+    private readonly userService: UsersService,
+  ) { }
 
   create(createFieldDto: CreateFieldDto) {
     return 'This action adds a new field';
   }
 
   findAll() {
-    return `This action returns all field`;
+    return this.fieldRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} field`;
+  findOne(id: number): Promise<Field> {
+    return this.fieldRepository.findOne({
+      where: { id },
+    });
   }
 
   update(id: number, updateFieldDto: UpdateFieldDto) {
@@ -37,21 +39,21 @@ export class FieldService {
     return `This action removes a #${id} field`;
   }
 
-  async updateField(field_name: string, req : CustomRequest){
+  async updateField(field_name: string, req: CustomRequest) {
     const user = await this.userService.getUserById(req.user.id);
-    if(user.role == Role.Admin){
+    if (user.role == Role.Admin) {
       let field = await this.getFieldByName(field_name);
       let date = new Date(field.next_avaible_day);
       let today = new Date(Date.now());
       if(date >= today){
         date = new Date(today);
-      }else{
+      } else {
         date = new Date(today);
-        date.setDate(date.getDate() + 2); 
+        date.setDate(date.getDate() + 2);
       }
       field.next_avaible_day = date;
       return this.fieldRepository.save(field);
-    }else{
+    } else {
       throw new UnauthorizedException({
         message: 'Vous n\' avez pas les droits necessaires pour faire cette action.',
       });
@@ -61,5 +63,5 @@ export class FieldService {
   getFieldByName(field_name: string) {
     return this.fieldRepository.findOneBy({ field_name });
   }
-  
+
 }

@@ -1,8 +1,9 @@
 import { Role } from "../../role/role.enum";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Slot } from "src/slot/entities/slot.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('user')
-export class User{
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,4 +15,7 @@ export class User{
 
   @Column({ type: 'char', length: 5, nullable: false, default: 'user' })
   role: Role;
+
+  @OneToMany(() => Slot, (slot) => slot.user)
+  slots: Slot[];
 }

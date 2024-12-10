@@ -8,15 +8,15 @@ import { jwtConstants } from 'src/auth/auth.const';
 
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '61d' },
-    }),
+  imports: [TypeOrmModule.forFeature([User]),
+  JwtModule.register({
+    global: true,
+    secret: jwtConstants.secret,
+    signOptions: { expiresIn: '61d' },
+  }),
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports:[UsersService],
+  exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

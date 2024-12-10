@@ -1,15 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/users/entities/user.entity";
+import { Field } from "src/field/entities/field.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('solt')
-export class Slot{
+export class Slot {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'date', nullable: false })
-  slot_date: string;
+  slot_date: Date;
 
-  @Column({ type: 'boolean', nullable: false })
-  is_avaible: boolean;
+  @Column({ type: 'time', nullable: false })
+  slot_hour: string;
 
-  
+  @ManyToOne(() => Field, (field) => field.slots, { nullable: false })
+  @JoinColumn({ name: 'field_id' }) // Optionnel : personnalise le nom de la colonne dans la table
+  field: Field;
+
+  // Relation: un slot appartient à un seul utilisateur
+  @ManyToOne(() => User, (user) => user.slots, { nullable: true })
+  @JoinColumn({ name: 'user_id' })
+  user?: User;
 }
