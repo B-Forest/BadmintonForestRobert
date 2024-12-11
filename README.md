@@ -4,26 +4,33 @@
 2. [Utilisation](#utilisation)
 3. [Conception](#conception)
 4. [Références](#références)
-   
+
 ## Installation
 
 Configuration du .env
+
 ```bash
 $ cp .env.example .env
 ```
+
 Remplissez les valeurs dans .env en fonction des besoins de votre environnement
 
 Installation des librairies externes
+
 ```bash
 $ npm install
 ```
-Executition du seeder 
-```bash
-$ npm run seed
-```
-Lancement du projet 
+
+Lancement du projet et creation de la base de données grace au synchronize: true dans app.module.ts
+
 ```bash
 $ npm run start
+```
+
+Executition du seeder qui va créer des utilisateurs de base et des terrains
+
+```bash
+$ npm run seed
 ```
 
 ## Utilisation
@@ -34,9 +41,29 @@ Le fichier OAD.yaml peut-être utilisé dans Swagger Editor.
 
 Pour pouvoir vous connecter, veuillez utiliser la route /register pour créer un compte, puis la route /login pour pouvoir récuperer un token necessaire à l'utilisation de certaines routes.
 
+Pour utiliser les routes protégées, veuillez ajouter le token dans swagger avec le format suivant : Bearer {token}
+
 Vous pourrez alors voir la liste des créneaux disponible pour une journée avec la route : /slots/fields/{date}
 
 Et par la suite réserver un créneau avec la route /slots/reservations/{id} avec l'id qui correspond à l'id d'un créneau.
+
+Pour pouvoir accéder au bac a sable pour utiliser GraphQL, une fois le projet lancé, allez sur : http://localhost:3000/graphql
+
+Vous pourrez alors utiliser les requêtes suivantes :
+
+```graphql
+query GetAvailableSlots {
+  availableSlots(date: "11-12-2024", terrain: "B") {
+    slot_hour
+    isAvailable
+  }
+}
+```
+
+afin de récupérer les créneaux disponibles en fonction de la date et du terrain. (avec ce format de date : "DD-MM-YYYY")
+
+```graphql
+
 
 ## Conception
 
@@ -55,3 +82,4 @@ Cours d'API de Paul SCHUHMACHER
 Forum StackOverflow : https://stackoverflow.com/
 
 ChatGPT : https://chatgpt.com/
+```

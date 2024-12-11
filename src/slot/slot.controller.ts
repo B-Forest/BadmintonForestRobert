@@ -15,10 +15,10 @@ export class SlotController {
     return this.slotService.create(createSlotDto);
   }
 
-  @Get('fields/:fieldId/date/:date')
+  @Get('fields/:field_name/date/:date')
   async getOrGenerateSlots(
     @Param('field_name') fieldName: string,
-    @Param('date') @Param('date') date: Date,
+    @Param('date') @Param('date') date: string,
   ) {
     const slots = await this.slotService.getOrGenerateSlots(fieldName, date);
     return {
@@ -75,7 +75,7 @@ export class SlotController {
 
   @Get('fields/:date')
   async getSlotsByDate(@Param('date') date: string) {
-    const slots = await this.slotService.getSlotsByDate(new Date(date));
+    const slots = await this.slotService.getSlotsByDate(date);
     return {
       slots: slots,
       _links: {

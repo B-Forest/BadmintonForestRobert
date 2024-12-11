@@ -30,17 +30,22 @@ export class SlotService {
     return await this.repository.save(slot);
   }
 
-  async getOrGenerateSlots(fieldName: string, date: Date): Promise<SlotEntity[]> {
+  async getOrGenerateSlots(fieldName: string, date: string): Promise<SlotEntity[]> {
+    console.log('getOrGenerateSlots', date, typeof date, fieldName);
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    console.log('startOfDay', startOfDay);
+    console.log('endOfDay', endOfDay);
+
     const field = await this.fieldService.getFieldByName(fieldName);
     if (!field) {
       throw new Error(`Terrain ${fieldName} non trouvé`);
     }
+    console.log('field', field);
 
     const slots = await this.repository
       .createQueryBuilder('slot')
@@ -50,6 +55,7 @@ export class SlotService {
       .andWhere('field.id = :fieldId', { fieldId: field.id })
       .getMany();
 
+    console.log('slots', slots);
     if (slots.length > 0) {
       return slots.map(slot => ({
         ...slot,
@@ -161,7 +167,7 @@ export class SlotService {
     }
   }
 
-  async getSlotsByDate(date: Date) {
+  async getSlotsByDate(date: string) {
     const fields = await this.fieldService.findAll();
 
     const slots = [];

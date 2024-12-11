@@ -8,7 +8,7 @@ export class SlotsResolver {
 
     @Query(() => [SlotEntity], { name: 'availableSlots' })
     async getAvailableSlots(
-        @Args('date') date: Date,
+        @Args('date') date: string,
         @Args('terrain') terrain: string,
     ): Promise<SlotEntity[]> {
         return this.slotsService.getOrGenerateSlots(terrain, date);

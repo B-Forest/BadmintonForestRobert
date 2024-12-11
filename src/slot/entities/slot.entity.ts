@@ -1,7 +1,7 @@
 import { UserEntity } from "../../users/entities/user.entity";
 import { FieldEntity } from "../../field/entities/field.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, GraphQLISODateTime } from '@nestjs/graphql';
 
 @ObjectType()
 @Entity('slot')
@@ -10,7 +10,7 @@ export class SlotEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   @Column({ type: 'date', nullable: false })
   slot_date: Date;
 
