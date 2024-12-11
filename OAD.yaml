@@ -11,6 +11,70 @@ components:
       in: header
       description: >-
         Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
+  schemas:
+    UserReservations:
+      type: object
+      properties:
+        reservations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: ID de la réservation
+              field:
+                type: string
+                description: Nom du terrain
+              date:
+                type: string
+                format: date
+                description: Date de la réservation
+              hour:
+                type: string
+                format: date
+                description: Heure de la réservation
+    User:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: ID de l'utilisateur
+              pseudo:
+                type: string
+                description: Pseudo
+              password:
+                type: string
+                description: Mot de passe
+    Field:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: ID du terrain
+              field_name:
+                type: string
+                description: Nom du terrain
+              next_day_avaible:
+                type: string
+                format: date
+                description: Prochaine date à laquel le terrain est disponible
+    Token:
+      type: object
+      properties:
+        Token:
+          type: string
+          description: Token de connection à rajouter dans les autorisations
 paths:
   /register:
     post:
@@ -34,6 +98,10 @@ paths:
       responses:
         '201':
           description: L'utilisateur.ice a été créé.e
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: Paramètres incorrects ou manquants
   /login:
@@ -58,6 +126,10 @@ paths:
       responses:
         '200':
           description: L'utilisateur.ice est connecté.e
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Token'
         '400':
           description: Paramètres incorrects ou manquants
   /slots/reservations/{id}:
@@ -75,6 +147,10 @@ paths:
       responses:
         '201':
           description: La réservation a été créée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
     delete:
       security:
         - Bearer: []
@@ -89,48 +165,18 @@ paths:
       responses:
         '200':
           description: La réservation a été annulée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
         '204':
           description: La réservation a été annulée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
         '404':
           description: La réservation n'existe pas
-        '400':
-          description: L'ID fourni est invalide
-  /fields/{name}/disable:
-    put:
-      security:
-        - Bearer: []
-      summary: Rendre un terrain en indisponible pendant 2 jours
-      parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-            minimum: 0
-      responses:
-        '200':
-          description: La disponibilité du terrain a été modifiée
-        '204':
-          description: La disponibilité du terrain a été modifiée
-        '400':
-          description: L'ID fourni est invalide
-  /fields/{name}/avaible:
-    put:
-      security:
-        - Bearer: []
-      summary: Mettre un terrain indisponible à disponible
-      parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-            minimum: 0
-      responses:
-        '200':
-          description: La disponibilité du terrain a été modifiée
-        '204':
-          description: La disponibilité du terrain a été modifiée
         '400':
           description: L'ID fourni est invalide
   /slots/fields/{id}/date/{date}:
@@ -154,6 +200,10 @@ paths:
       responses:
         '200':
           description: La liste des créneaux disponibles pour le terrain à cette date
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
         '400':
           description: Les paramètres fournis sont invalides (ID ou date)
         '404':
@@ -166,6 +216,10 @@ paths:
       responses:
         '200':
           description: La liste des réservation de l'utilisateur connecté
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
         '400':
           description: L'ID fourni est invalide
         '404':
@@ -184,5 +238,63 @@ paths:
       responses:
         '200':
           description: La liste des créneaux de tous les terrains à cette date
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/UserReservations'
         '404':
           description: L'utilisateur n'existe pas
+  /fields/{name}/disable:
+    put:
+      security:
+        - Bearer: []
+      summary: Rendre un terrain en indisponible pendant 2 jours
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+            minimum: 0
+      responses:
+        '200':
+          description: La disponibilité du terrain a été modifiée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Field'
+        '204':
+          description: La disponibilité du terrain a été modifiée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Field'
+        '400':
+          description: L'ID fourni est invalide
+  /fields/{name}/avaible:
+    put:
+      security:
+        - Bearer: []
+      summary: Mettre un terrain indisponible à disponible
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+            minimum: 0
+      responses:
+        '200':
+          description: La disponibilité du terrain a été modifiée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Field'
+        '204':
+          description: La disponibilité du terrain a été modifiée
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Field'
+        '400':
+          description: L'ID fourni est invalide

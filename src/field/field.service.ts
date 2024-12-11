@@ -43,6 +43,9 @@ export class FieldService {
     const user = await this.userService.getUserById(req.user.id);
     if (user.role == Role.Admin) {
       let field = await this.getFieldByName(field_name);
+      if(field == null){
+        throw new Error(`Field with name ${field_name} not found`);
+      }
       let date = new Date(field.next_avaible_day);
       let today = new Date(Date.now());
       if(date >= today){

@@ -1,5 +1,5 @@
 import { Role } from "../../role/role.enum";
-import { Slot } from "src/slot/entities/slot.entity";
+import { Slot } from "../../slot/entities/slot.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('user')

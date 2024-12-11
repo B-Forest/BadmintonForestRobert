@@ -1,5 +1,5 @@
-import { User } from "src/users/entities/user.entity";
-import { Field } from "src/field/entities/field.entity";
+import { Field } from "../../field/entities/field.entity";
+import { User } from "../../users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('solt')

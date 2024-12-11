@@ -5,10 +5,11 @@ import { FieldModule } from 'src/field/field.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Slot } from './entities/slot.entity';
 import { UsersModule } from 'src/users/users.module';
+import { Field } from '../field/entities/field.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Slot]),
+    TypeOrmModule.forFeature([Slot, Field]),
     FieldModule,
     UsersModule],
   controllers: [SlotController],
