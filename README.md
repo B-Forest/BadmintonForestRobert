@@ -21,13 +21,13 @@ Installation des librairies externes
 $ npm install
 ```
 
-Lancement du projet et creation de la base de données grace au synchronize: true dans app.module.ts
+Lancement du projet et création de la base de données grâce au synchronize: true dans app.module.ts
 
 ```bash
 $ npm run start
 ```
 
-Executition du seeder qui va créer des utilisateurs de base et des terrains
+Exécution du seeder qui va créer des utilisateurs de base et des terrains
 
 ```bash
 $ npm run seed
@@ -39,15 +39,15 @@ Pour pouvoir accéder au Swagger, une fois le projet lancé, allez sur : http://
 
 Le fichier OAD.yaml peut-être utilisé dans Swagger Editor.
 
-Pour pouvoir vous connecter, veuillez utiliser la route /register pour créer un compte, puis la route /login pour pouvoir récuperer un token necessaire à l'utilisation de certaines routes.
+Pour pouvoir vous connecter, veuillez utiliser la route /register pour créer un compte, puis la route /login pour pouvoir récuperer un token nécessaire à l'utilisation de certaines routes.
 
 Pour utiliser les routes protégées, veuillez ajouter le token dans swagger avec le format suivant : Bearer {token}
 
-Vous pourrez alors voir la liste des créneaux disponible pour une journée avec la route : /slots/fields/{date}
+Vous pourrez alors voir la liste des créneaux disponibles pour une journée avec la route : /slots/fields/{date}
 
 Et par la suite réserver un créneau avec la route /slots/reservations/{id} avec l'id qui correspond à l'id d'un créneau.
 
-Pour pouvoir accéder au bac a sable pour utiliser GraphQL, une fois le projet lancé, allez sur : http://localhost:3000/graphql
+Pour pouvoir accéder au bac à sable pour utiliser GraphQL, une fois le projet lancé, allez sur : http://localhost:3000/graphql
 
 Vous pourrez alors utiliser les requêtes suivantes :
 
@@ -76,7 +76,8 @@ Documentation NestJS : https://docs.nestjs.com/
 
 Cours d'API de Paul SCHUHMACHER
 
+RepoGit Nest HAL : https://github.com/gabriel-pinheiro/nest-hal
+
 Forum StackOverflow : https://stackoverflow.com/
 
 ChatGPT : https://chatgpt.com/
-```
