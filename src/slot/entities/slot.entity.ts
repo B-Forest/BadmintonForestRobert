@@ -1,24 +1,31 @@
-import { Field } from "../../field/entities/field.entity";
-import { User } from "../../users/entities/user.entity";
+import { UserEntity } from "../../users/entities/user.entity";
+import { FieldEntity } from "../../field/entities/field.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
-@Entity('solt')
-export class Slot {
+@ObjectType()
+@Entity('slot')
+export class SlotEntity {
+  @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column({ type: 'date', nullable: false })
   slot_date: Date;
 
+  @Field()
   @Column({ type: 'time', nullable: false })
   slot_hour: string;
 
-  @ManyToOne(() => Field, (field) => field.slots, { nullable: false })
-  @JoinColumn({ name: 'field_id' }) // Optionnel : personnalise le nom de la colonne dans la table
-  field: Field;
+  @ManyToOne(() => FieldEntity, (field) => field.slots, { nullable: false })
+  @JoinColumn({ name: 'field_id' })
+  field: FieldEntity;
 
-  // Relation: un slot appartient à un seul utilisateur
-  @ManyToOne(() => User, (user) => user.slots, { nullable: true })
+  @ManyToOne(() => UserEntity, (user) => user.slots, { nullable: true })
   @JoinColumn({ name: 'user_id' })
-  user?: User;
+  user?: UserEntity | null;
+
+  @Field(() => Boolean)
+  isAvailable: boolean;
 }

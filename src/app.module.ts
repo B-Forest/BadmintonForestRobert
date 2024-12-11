@@ -3,15 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Field } from './field/entities/field.entity';
-import { User } from './users/entities/user.entity';
+import { FieldEntity } from './field/entities/field.entity';
+import { SlotEntity } from './slot/entities/slot.entity';
+import { UserEntity } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { FieldModule } from './field/field.module';
 import { SlotModule } from './slot/slot.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
-import { Slot } from './slot/entities/slot.entity';
 
 ConfigModule.forRoot();
 
@@ -29,7 +28,11 @@ ConfigModule.forRoot();
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      entities: [User, Field, Slot],
+      entities: [UserEntity, FieldEntity, SlotEntity],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
     }),
     UsersModule,
     FieldModule,

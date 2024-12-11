@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSlotDto } from './dto/create-slot.dto';
-import { UpdateSlotDto } from './dto/update-slot.dto';
-import { Slot } from './entities/slot.entity';
-import { Field } from 'src/field/entities/field.entity';
+import { SlotEntity } from './entities/slot.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FieldService } from 'src/field/field.service';
 import { UsersService } from 'src/users/users.service';
 import { CustomRequest } from 'src/request/custom-request';
-import e from 'express';
 
 @Injectable()
 export class SlotService {
   constructor(
-    @InjectRepository(Slot)
-    protected readonly repository: Repository<Slot>,
+    @InjectRepository(SlotEntity)
+    protected readonly repository: Repository<SlotEntity>,
     protected readonly fieldService: FieldService,
     protected readonly usersService: UsersService,
   ) { }
 
   async create(createSlotDto: CreateSlotDto) {
-    const slot = new Slot();
+    const slot = new SlotEntity();
     slot.slot_date = createSlotDto.slot_date;
     slot.slot_hour = createSlotDto.slot_hour;
 
@@ -33,92 +30,93 @@ export class SlotService {
     return await this.repository.save(slot);
   }
 
-  async getOrGenerateSlots(fieldId: number, date: Date): Promise<Slot[]> {
+  async getOrGenerateSlots(fieldName: string, date: Date): Promise<SlotEntity[]> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    const field = await this.fieldService.getFieldByName(fieldName);
+    if (!field) {
+      throw new Error(`Terrain ${fieldName} non trouvé`);
+    }
+
     const slots = await this.repository
       .createQueryBuilder('slot')
       .leftJoinAndSelect('slot.field', 'field')
       .leftJoinAndSelect('slot.user', 'user')
       .where('slot.slot_date BETWEEN :startOfDay AND :endOfDay', { startOfDay, endOfDay })
-      .andWhere('field.id = :fieldId', { fieldId })
+      .andWhere('field.id = :fieldId', { fieldId: field.id })
       .getMany();
 
     if (slots.length > 0) {
-      console.log(`Slots already exist for field ${fieldId} on ${date.toISOString()}`);
-      return slots;
+      return slots.map(slot => ({
+        ...slot,
+        isAvailable: slot.user ? false : true,
+      }));;
     }
-
-    console.log(`No slots found for field ${fieldId} on ${date.toISOString()}, creating...`);
 
     const startHour = 10;
     const endHour = 22;
-    const slotDuration = 45; // en minutes
+    const slotDuration = 45;
 
-    const field = await this.fieldService.findOne(fieldId);
-    if (!field) {
-      throw new Error(`Field with ID ${fieldId} not found`);
-    }
-
-    const newSlots: Slot[] = [];
+    const newSlots: SlotEntity[] = [];
 
     let currentTime = new Date(startOfDay);
-    currentTime.setHours(startHour, 0, 0, 0); // Début à 10h00
+    currentTime.setHours(startHour, 0, 0, 0);
 
     while (currentTime.getHours() < endHour) {
-      // Vérifier si l'heure actuelle est bien avant 22h00
       if (currentTime.getHours() === endHour - 1 && currentTime.getMinutes() + slotDuration > 60) {
-        break; // Ne pas ajouter de créneau si ça dépasse 22h00
+        break
       }
 
-      // Créer l'entité Slot
       const slot_date = new Date(currentTime);
 
       const slot = this.repository.create({
         slot_date,
-        slot_hour: slot_date.toISOString().split('T')[1].slice(0, 5), // Format de l'heure HH:mm
+        slot_hour: slot_date.toISOString().split('T')[1].slice(0, 5),
         field,
-        user: null, // Pas d'utilisateur assigné pour l'instant
+        user: null,
       });
 
-      // Ajouter à la liste des nouveaux créneaux
       newSlots.push(await this.repository.save(slot));
 
-      // Passer au créneau suivant (incrémenter de 45 minutes)
       currentTime.setMinutes(currentTime.getMinutes() + slotDuration);
     }
 
-    console.log(`Created ${newSlots.length} slots for field ${fieldId} on ${date.toISOString()}`);
-    return newSlots;
-  }
-
-  findAll() {
-    return `This action returns all slot`;
+    return newSlots.map(slot => ({
+      ...slot,
+      isAvailable: slot.user ? false : true,
+    }));
   }
 
   async addUserToSlot(slotId: number, req: CustomRequest) {
     const slot = await this.repository.findOne({
       where: { id: slotId },
+      relations: ['field'],
     });
     if (!slot) {
-      throw new Error(`Slot with ID ${slotId} not found`);
+      throw new Error(`Créneau avec l'id ${slotId} non trouvé`);
     }
 
     if (slot.user) {
-      throw new Error(`Slot with ID ${slotId} is already booked`);
+      throw new Error(`Ce créneau est déjà réservé`);
     }
 
-    try {
-      const user = await this.usersService.getUserById(req.user.id);
-      slot.user = user;
-      return await this.repository.save(slot);
-    } catch (e) {
-      throw new Error(`User with ID ${req.user.id} not found`);
+    if (new Date(slot.field.next_avaible_day).getTime() < new Date().getTime()) {
+      try {
+        const user = await this.usersService.getUserById(req.user.id);
+        slot.user = user;
+        return await this.repository.save(slot);
+      } catch (e) {
+        throw new Error(`Utilisateur avec l'id  ${req.user.id} non trouvé`);
+      }
+    } else {
+      throw new Error(`Ce terrain n'est pas disponible pour le moment`);
     }
+
+
   }
 
   async deleteUserToSlot(slotId: number, req: CustomRequest) {
@@ -127,17 +125,17 @@ export class SlotService {
       relations: ['user'],
     });
     if (!slot) {
-      throw new Error(`Slot with ID ${slotId} not found`);
+      throw new Error(`Créneau avec l'id ${slotId} non trouvé`);
     }
 
     if (!slot.user) {
-      throw new Error(`Slot with ID ${slotId} is not booked`);
+      throw new Error(`Créneau avec l'id ${slotId} n'est pas réservé`);
     }
 
     const user = await this.usersService.getUserById(req.user.id);
 
     if (slot.user.id !== user.id) {
-      throw new Error(`User with ID ${req.user.id} is not the owner of slot with ID ${slotId}`);
+      throw new Error(`Utilisateur avec l'id ${req.user.id} n'est pas celui qui a réservé ce créneau`);
     }
 
     slot.user = null;
@@ -156,10 +154,10 @@ export class SlotService {
       if (slots) {
         return slots;
       } else {
-        throw new Error(`No slots found for user with ID ${req.user.id}`);
+        throw new Error(`Aucun créneau trouvé pour l'utilisateur avec l'id ${req.user.id}`);
       }
     } catch (e) {
-      throw new Error(`User with ID ${req.user.id} not found`);
+      throw new Error(`Utilisateur avec l'id ${req.user.id} non trouvé`);
     }
   }
 
@@ -169,22 +167,12 @@ export class SlotService {
     const slots = [];
 
     for (const field of fields) {
-      const fieldSlots = await this.getOrGenerateSlots(field.id, date);
+      const fieldSlots = await this.getOrGenerateSlots(field.field_name, date);
       slots.push(fieldSlots);
     }
 
     return slots;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} slot`;
-  }
 
-  update(id: number, updateSlotDto: UpdateSlotDto) {
-    return `This action updates a #${id} slot`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} slot`;
-  }
 }

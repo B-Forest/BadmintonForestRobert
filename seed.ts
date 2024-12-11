@@ -1,10 +1,11 @@
 import { seeder } from 'nestjs-seeder';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './src/users/entities/user.entity';
+import { UserEntity } from './src/users/entities/user.entity';
 import { UsersSeeder } from './src/users/users.seeder';
 import { ConfigModule } from '@nestjs/config';
-import { Field } from './src/field/entities/field.entity';
+import { FieldEntity } from './src/field/entities/field.entity';
 import { FieldSeeder } from './src/field/field.seeder';
+import { SlotEntity } from './src/slot/entities/slot.entity';
 
 ConfigModule.forRoot();
 
@@ -17,9 +18,9 @@ seeder({
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
-            synchronize: false,
-            entities: [User, Field]
+            synchronize: true,
+            entities: [UserEntity, FieldEntity, SlotEntity],
         }),
-        TypeOrmModule.forFeature([User, Field]), // Importer l'entité User
+        TypeOrmModule.forFeature([UserEntity, FieldEntity, SlotEntity]),
     ],
-}).run([UsersSeeder, FieldSeeder]); // Exécuter le seeder pour peupler les données
+}).run([UsersSeeder, FieldSeeder]);

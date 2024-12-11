@@ -4,16 +4,16 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
 
   constructor(
-    @InjectRepository(User)
-    protected readonly userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    protected readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
-) {}
+  ) { }
 
   async userRegister(data: any) {
     return await this.createUser(data);
@@ -41,11 +41,11 @@ export class UsersService {
     return this.userRepository.findOneBy({ pseudo });
   }
 
-  getUserById(id: number){
+  getUserById(id: number) {
     return this.userRepository.findOneBy({ id: id });
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     if (!createUserDto.password || !createUserDto.pseudo) {
       throw new UnauthorizedException({
         message: 'Pseudo and password are required',

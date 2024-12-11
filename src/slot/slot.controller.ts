@@ -15,31 +15,22 @@ export class SlotController {
     return this.slotService.create(createSlotDto);
   }
 
-  @Get()
-  findAll() {
-    return this.slotService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.slotService.findOne(+id);
-  }
-
   @Get('fields/:fieldId/date/:date')
   async getOrGenerateSlots(
-    @Param('fieldId') fieldId: string,
-    @Param('date') date: string,
+    @Param('field_name') fieldName: string,
+    @Param('date') @Param('date') date: Date,
   ) {
-    const slots = await this.slotService.getOrGenerateSlots(+fieldId, new Date(date));
+    const slots = await this.slotService.getOrGenerateSlots(fieldName, date);
     return {
       slots: slots,
       _links: {
-          self: { href: `fields/${fieldId}/date/${date}` },
-          annuler: { href: `/slots/reservations/${fieldId}`, method: 'DELETE', templated: true },
-          reservation: { href: `/slots/reservations/${fieldId}`, method: 'POST',  templated: true},
+        self: { href: `fields/${fieldName}/date/${date}` },
+        annuler: { href: `/slots/reservations/slotId`, method: 'DELETE', templated: true },
+        reservation: { href: `/slots/reservations/slotId`, method: 'POST', templated: true },
       },
     };
   }
+
 
   @Post('reservations/:id')
   @UseGuards(AuthGuard)
@@ -48,9 +39,9 @@ export class SlotController {
     return {
       ...slot,
       _links: {
-          self: { href: `/slots/reservations/${id}` },
-          annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
-          voirReservationTerrain: { href: '/slots/fields/{fieldId}/date/{date}', templated: true },
+        self: { href: `/slots/reservations/${id}` },
+        annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
+        voirReservationTerrain: { href: `/slots/fields/${id}/date/{date}`, templated: true },
       },
     };
   }
@@ -62,8 +53,8 @@ export class SlotController {
     return {
       ...slot,
       _links: {
-          self: { href: `/slots/reservations/${id}` },
-          reservation: { href: `/slots/reservations/${id}`, method: 'POST',  templated: true},
+        self: { href: `/slots/reservations/${id}` },
+        reservation: { href: `/slots/reservations/${id}`, method: 'POST', templated: true },
       },
     };
   }
@@ -75,9 +66,9 @@ export class SlotController {
     return {
       slots: slots,
       _links: {
-          self: { href: '/slots/users/reservations' },
-          voirReservation: { href: '/slots/fields/{fieldId}/date/{date}', templated: true },
-          annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
+        self: { href: '/slots/users/reservations' },
+        voirReservation: { href: '/slots/fields/{fieldId}/date/{date}', templated: true },
+        annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
       },
     };
   }
@@ -88,10 +79,10 @@ export class SlotController {
     return {
       slots: slots,
       _links: {
-          self: { href: '/slots/users/reservations' },
-          creerReservation: { href: '/slots/reservation/{id}', templated: true },
-          annuler: { href: `/slots/reservations/id`, method: 'DELETE', templated: true },
-          creaneauTerrain: { href: `/slots/fields/{id}/date/${date}`, method: 'GET', templated: true },
+        self: { href: '/slots/users/reservations' },
+        creerReservation: { href: '/slots/reservation/{id}', templated: true },
+        annuler: { href: `/slots/reservations/id`, method: 'DELETE', templated: true },
+        creaneauTerrain: { href: `/slots/fields/{id}/date/${date}`, method: 'GET', templated: true },
       },
     };
   }
