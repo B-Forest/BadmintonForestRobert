@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersSeeder } from '../users/users.seeder'; // Assurez-vous que le chemin du seeder est correct
+import { UsersSeeder } from '../users/users.seeder';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { FieldEntity } from 'src/field/entities/field.entity';
 import { FieldSeeder } from 'src/field/field.seeder';
@@ -8,8 +8,8 @@ import { FieldSeeder } from 'src/field/field.seeder';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity, FieldEntity]), // Ajout des entités User et Field
+        TypeOrmModule.forFeature([UserEntity, FieldEntity]),
     ],
-    providers: [UsersSeeder, FieldSeeder], // Ajout des Seeders UsersSeeder et FieldSeeder
+    providers: [UsersSeeder, FieldSeeder],
 })
 export class SeedModule { }
