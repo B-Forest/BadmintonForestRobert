@@ -1,14 +1,15 @@
 import { Seeder, DataFactory } from 'nestjs-seeder';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Field } from './entities/field.entity';
+import { FieldEntity } from './entities/field.entity';
+import { Injectable } from '@nestjs/common';
 
 
-
+@Injectable()
 export class FieldSeeder implements Seeder {
     constructor(
-        @InjectRepository(Field)
-        private readonly fieldRepository: Repository<Field>,
+        @InjectRepository(FieldEntity)
+        private readonly fieldRepository: Repository<FieldEntity>,
     ) { }
 
     async seed(): Promise<any> {
@@ -31,10 +32,10 @@ export class FieldSeeder implements Seeder {
             },
 
         ]
-        return this.fieldRepository.save(fields); // Sauvegarde les utilisateurs dans la base de données
+        return this.fieldRepository.save(fields);
     }
 
     async drop(): Promise<any> {
-        return this.fieldRepository.clear(); // Efface tous les utilisateurs de la base de données
+        return this.fieldRepository.clear();
     }
 }

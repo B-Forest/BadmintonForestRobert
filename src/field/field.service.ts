@@ -4,7 +4,7 @@ import { UpdateFieldDto } from './dto/update-field.dto';
 import { CustomRequest } from 'src/request/custom-request';
 import { UsersService } from '../users/users.service';
 import { Role } from '../role/role.enum';
-import { Field } from './entities/field.entity';
+import { FieldEntity } from './entities/field.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -12,8 +12,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class FieldService {
   constructor(
-    @InjectRepository(Field)
-    protected readonly fieldRepository: Repository<Field>,
+    @InjectRepository(FieldEntity)
+    protected readonly fieldRepository: Repository<FieldEntity>,
     private readonly userService: UsersService,
   ) { }
 
@@ -25,7 +25,7 @@ export class FieldService {
     return this.fieldRepository.find();
   }
 
-  findOne(id: number): Promise<Field> {
+  findOne(id: number): Promise<FieldEntity> {
     return this.fieldRepository.findOne({
       where: { id },
     });
@@ -43,12 +43,12 @@ export class FieldService {
     const user = await this.userService.getUserById(req.user.id);
     if (user.role == Role.Admin) {
       let field = await this.getFieldByName(field_name);
-      if(field == null){
+      if (field == null) {
         throw new Error(`Field with name ${field_name} not found`);
       }
       let date = new Date(field.next_avaible_day);
       let today = new Date(Date.now());
-      if(date >= today){
+      if (date >= today) {
         date = new Date(today);
       } else {
         date = new Date(today);

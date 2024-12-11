@@ -179,16 +179,16 @@ paths:
           description: La réservation n'existe pas
         '400':
           description: L'ID fourni est invalide
-  /slots/fields/{id}/date/{date}:
+  /slots/fields/{name}/date/{date}:
     get:
       summary: Voir la liste des créneaux du terrain pour une date donnée
       parameters:
-        - name: id
+        - name: name
           in: path
           required: true
           description: L'identifiant du terrain
           schema:
-            type: integer
+            type: string
             minimum: 0
         - name: date
           in: path
