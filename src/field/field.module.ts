@@ -4,11 +4,12 @@ import { FieldController } from './field.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Field } from './entities/field.entity';
 import { UsersModule } from 'src/users/users.module';
+import { Slot } from '../slot/entities/slot.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Field]),
-    UsersModule
+    TypeOrmModule.forFeature([Field, Slot]),
+    UsersModule,
   ],
   controllers: [FieldController],
   providers: [FieldService],

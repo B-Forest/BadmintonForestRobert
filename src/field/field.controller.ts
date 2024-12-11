@@ -36,14 +36,29 @@ export class FieldController {
 
   @Put(':name/disable')
   @UseGuards(AuthGuard)
-  disableField(@Param('name') name: string, @Request() req : CustomRequest) {
-    return this.fieldService.updateField(name, req);
+  async disableField(@Param('name') name: string, @Request() req : CustomRequest) {
+    const field = await this.fieldService.updateField(name, req);
+    return {
+      slots: field,
+      _links: {
+          self: { href: `fields/${name}/disable` },
+          rendreDisponible: { href: `fields/${name}/avaible` },
+      },
+    };
+    
   }
 
   @Put(':name/avaible')
   @UseGuards(AuthGuard)
-  avaibleField(@Param('name') name: string, @Request() req : CustomRequest) {
-    return this.fieldService.updateField(name, req);
+  async avaibleField(@Param('name') name: string, @Request() req : CustomRequest) {
+    const field = await this.fieldService.updateField(name, req);
+    return {
+      slots: field,
+      _links: {
+          self: { href: `fields/${name}/avaible` },
+          rendreIndisponible: { href: `fields/${name}/disable` },
+      },
+    };
   }
  
 }

@@ -4,16 +4,14 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Field } from './field/entities/field.entity';
-import { Slot } from './slot/entities/slot.entity';
 import { User } from './users/entities/user.entity';
-import { UsersController } from './users/users.controller';
-import { SlotController } from './slot/slot.controller';
 import { UsersModule } from './users/users.module';
 import { FieldModule } from './field/field.module';
 import { SlotModule } from './slot/slot.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { Slot } from './slot/entities/slot.entity';
 
 ConfigModule.forRoot();
 

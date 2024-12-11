@@ -20,39 +20,79 @@ export class SlotController {
     return this.slotService.findAll();
   }
 
-  @Get('fields/:fieldId/date/:date')
-  async getOrGenerateSlots(
-    @Param('fieldId') fieldId: string,
-    @Param('date') date: string,
-  ) {
-    return this.slotService.getOrGenerateSlots(+fieldId, new Date(date));
-  }
-
-  @Post('reservations/:id')
-  @UseGuards(AuthGuard)
-  addUserToSlot(@Param('id') id: number, @Request() req: CustomRequest) {
-    return this.slotService.addUserToSlot(+id, req);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.slotService.findOne(+id);
   }
 
+  @Get('fields/:fieldId/date/:date')
+  async getOrGenerateSlots(
+    @Param('fieldId') fieldId: string,
+    @Param('date') date: string,
+  ) {
+    const slots = await this.slotService.getOrGenerateSlots(+fieldId, new Date(date));
+    return {
+      slots: slots,
+      _links: {
+          self: { href: `fields/${fieldId}/date/${date}` },
+          annuler: { href: `/slots/reservations/${fieldId}`, method: 'DELETE', templated: true },
+          reservation: { href: `/slots/reservations/${fieldId}`, method: 'POST',  templated: true},
+      },
+    };
+  }
+
+  @Post('reservations/:id')
+  @UseGuards(AuthGuard)
+  async addUserToSlot(@Param('id') id: number, @Request() req: CustomRequest) {
+    const slot = await this.slotService.addUserToSlot(+id, req);
+    return {
+      ...slot,
+      _links: {
+          self: { href: `/slots/reservations/${id}` },
+          annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
+          voirReservationTerrain: { href: '/slots/fields/{fieldId}/date/{date}', templated: true },
+      },
+    };
+  }
+
   @Delete('reservations/:id')
   @UseGuards(AuthGuard)
-  remove(@Param('id') id: string, @Request() req: CustomRequest) {
-    return this.slotService.deleteUserToSlot(+id, req);
+  async remove(@Param('id') id: string, @Request() req: CustomRequest) {
+    const slot = await this.slotService.deleteUserToSlot(+id, req);
+    return {
+      ...slot,
+      _links: {
+          self: { href: `/slots/reservations/${id}` },
+          reservation: { href: `/slots/reservations/${id}`, method: 'POST',  templated: true},
+      },
+    };
   }
 
   @Get('users/reservations')
   @UseGuards(AuthGuard)
   async getUserSlots(@Param('id') id: string, @Request() req: CustomRequest) {
-    return this.slotService.findAllByUser(req);
+    const slots = await this.slotService.findAllByUser(req);
+    return {
+      slots: slots,
+      _links: {
+          self: { href: '/slots/users/reservations' },
+          voirReservation: { href: '/slots/fields/{fieldId}/date/{date}', templated: true },
+          annuler: { href: `/slots/reservations/${id}`, method: 'DELETE', templated: true },
+      },
+    };
   }
 
   @Get('fields/:date')
   async getSlotsByDate(@Param('date') date: string) {
-    return this.slotService.getSlotsByDate(new Date(date));
+    const slots = await this.slotService.getSlotsByDate(new Date(date));
+    return {
+      slots: slots,
+      _links: {
+          self: { href: '/slots/users/reservations' },
+          creerReservation: { href: '/slots/reservation/{id}', templated: true },
+          annuler: { href: `/slots/reservations/id`, method: 'DELETE', templated: true },
+          creaneauTerrain: { href: `/slots/fields/{id}/date/${date}`, method: 'GET', templated: true },
+      },
+    };
   }
 }
