@@ -62,9 +62,6 @@ query GetAvailableSlots {
 
 afin de récupérer les créneaux disponibles en fonction de la date et du terrain. (avec ce format de date : "DD-MM-YYYY")
 
-```graphql
-
-
 ## Conception
 
 Dictionnaire des données
